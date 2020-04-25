@@ -1,6 +1,7 @@
 package pages;
 
 import com.codeborne.selenide.SelenideElement;
+import helpers.PageHelper;
 import model.JobOffer;
 import org.openqa.selenium.By;
 import org.testng.Assert;
@@ -10,7 +11,7 @@ import java.util.List;
 
 import static com.codeborne.selenide.Selenide.$$;
 
-public class SavedJobsPage {
+public class SavedJobsPage extends PageHelper {
 
     private final String jobTitleXPath = ".//a";
     private final String companyNameXPath = ".//*[@title='Company']";
@@ -26,6 +27,9 @@ public class SavedJobsPage {
             String location = x.$(By.xpath(companyLocationXPath)).text();
             JobOffer jobOffer = new JobOffer(title, company, location);
             visibleJobsOffers.add(jobOffer);
+            log.info("Visible job title in ma saved jobs: " + jobOffer.getJobTitle());
+            log.info("Visible job company in ma saved jobs: " + jobOffer.getCompany());
+            log.info("Visible job location in ma saved jobs:: " + jobOffer.getLocation());
         });
         return visibleJobsOffers;
     }

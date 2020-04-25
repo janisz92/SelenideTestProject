@@ -32,18 +32,19 @@ public class CreateAccountPage extends PageHelper {
     private SelenideElement dashboardPageElement;
 
 
-
     public CreateAccountPage verifyUrl(String url) {
         Assert.assertEquals(url(), url);
         return this;
     }
 
     public CreateAccountPage fillCorrectEmailAddressField(String email) {
+        log.info("Email: " + email);
         emailInput.sendKeys(email);
         return this;
     }
 
     public CreateAccountPage fillCorrectPasswordAndConfirmField(String password) {
+        log.info("Password: " + password);
         passwordInput.clear();
         passwordInput.sendKeys(password);
         confirmPasswordInput.clear();
@@ -51,8 +52,8 @@ public class CreateAccountPage extends PageHelper {
         return this;
     }
 
-    public CreateAccountPage selectJobsCorpsCenter() {
-        jobsCorpsCenterSelect.selectOption(1);
+    public CreateAccountPage selectJobsCorpsCenter(int index) {
+        jobsCorpsCenterSelect.selectOption(index);
         return this;
     }
 

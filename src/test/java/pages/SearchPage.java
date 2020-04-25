@@ -73,6 +73,9 @@ public class SearchPage extends PageHelper {
             JobOffer jobOffer = new JobOffer(title, company, location);
             savedJobOffers.add(jobOffer);
             saveJobButton.click();
+            log.info("Saved job title: " + jobOffer.getJobTitle());
+            log.info("Saved job company: " + jobOffer.getCompany());
+            log.info("Saved job location: " + jobOffer.getLocation());
         }
         return this;
     }
@@ -87,6 +90,9 @@ public class SearchPage extends PageHelper {
 
         JobOffer jobOffer = new JobOffer(title, company, location);
         savedJobOffers.add(jobOffer);
+        log.info("Saved job title: " + jobOffer.getJobTitle());
+        log.info("Saved job company: " + jobOffer.getCompany());
+        log.info("Saved job location: " + jobOffer.getLocation());
         saveJobButton.click();
         return this;
     }

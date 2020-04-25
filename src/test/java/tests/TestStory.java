@@ -1,5 +1,6 @@
 package tests;
 
+import configuration.TestConfiguration;
 import enums.MyJobSearchOptionEnum;
 import enums.UrlEnum;
 import helpers.TestCasesHelper;
@@ -31,7 +32,7 @@ public class TestStory extends TestConfiguration {
                 .verifyUrl(UrlEnum.CREATE_ACCOUNT_PAGE.getUrl())
                 .fillCorrectEmailAddressField(validEmail)
                 .fillCorrectPasswordAndConfirmField(validPassword)
-                .selectJobsCorpsCenter()
+                .selectJobsCorpsCenter(1)
                 .confirmTermsAndConditions()
                 .confirmCreateAccount()
                 .verifyUrl(UrlEnum.DASHBOARD_PAGE.getUrl())
