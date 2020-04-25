@@ -1,14 +1,14 @@
 package pages;
 
 import com.codeborne.selenide.SelenideElement;
-import org.openqa.selenium.WebElement;
+import helpers.PageHelper;
 import org.openqa.selenium.support.FindBy;
 import org.testng.Assert;
 
 import static com.codeborne.selenide.Selenide.page;
 import static com.codeborne.selenide.WebDriverRunner.url;
 
-public class CreateAccountPage {
+public class CreateAccountPage extends PageHelper {
 
     @FindBy(id = "c_elem_0")
     private SelenideElement emailInput;
@@ -28,9 +28,13 @@ public class CreateAccountPage {
     @FindBy(xpath = "//button[contains(text(),'Create an account')]")
     private SelenideElement confirmCreateAccountButton;
 
+    @FindBy(xpath = "//*[contains(text(),'My Checklist')]")
+    private SelenideElement dashboardPageElement;
 
-    public CreateAccountPage verifyUrl() {
-        Assert.assertEquals(url(), "https://www.monsterworksdemo.com/account/account-lite");
+
+
+    public CreateAccountPage verifyUrl(String url) {
+        Assert.assertEquals(url(), url);
         return this;
     }
 
@@ -57,10 +61,9 @@ public class CreateAccountPage {
         return this;
     }
 
-    public DashboardPage confirmCreateAccount() throws InterruptedException {
+    public DashboardPage confirmCreateAccount() {
         confirmCreateAccountButton.click();
-        Thread.sleep(5000);
+        waitForNextPageToLoad(dashboardPageElement);
         return page(DashboardPage.class);
     }
-
 }
