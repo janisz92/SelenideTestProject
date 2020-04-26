@@ -30,7 +30,7 @@ public class TestStory extends TestConfiguration {
     @Test(dataProvider = "getEmailAndPassword")
     public void verifyOfSavedSecondAndLastJobTest(String validEmail, String validPassword) {
         List<JobOffer> savedJobOffers = new ArrayList<>();
-        List<JobOffer> visibleSavedJobsInSavedJobsPage = new ArrayList<>();
+        List<JobOffer> visibleSavedJobsInSavedJobsPage;
 
         searchPage = homePage
                 .createNewAccount()
