@@ -1,18 +1,23 @@
 package pages;
 
 import com.codeborne.selenide.SelenideElement;
-import helpers.PageHelper;
+import enums.MyJobSearchOptionEnum;
+import enums.PageWaitElementEnum;
+import helpers.AbstractPage;
 import model.JobOffer;
 import org.openqa.selenium.By;
-import org.openqa.selenium.support.FindBy;
 
 import java.util.List;
 
 import static com.codeborne.selenide.Selenide.*;
 import static com.codeborne.selenide.WebDriverRunner.url;
 
-public class SearchPage extends PageHelper {
+public class SearchPage extends AbstractPage {
 
+    private final String searchResult = "//div[@class='mux-search-results']";
+    private final String saveJobButton = "//*[@id='SaveJob']";
+    private final String myJobSearchDropdown = "//a[@id='dropdown-My-job-search']/following-sibling::ul";
+    private final String getMyJobSearchTab = "//a[@id='dropdown-My-job-search']//parent::li";
     private final String jobTitleXPath = ".//*[@class='title']";
     private final String companyNameXPath = ".//*[@class='company']";
     private final String companyLocationXPath = ".//*[@class='location']";
@@ -20,34 +25,15 @@ public class SearchPage extends PageHelper {
     private final String totalJobsResultAttribute = "data-results-total";
     private final String jobsResultPerPage = "data-results-per-page";
 
-    @FindBy(id = "ResultsScrollable")
-    private SelenideElement searchResultFrame;
-
-    @FindBy(xpath = "//div[@class='mux-search-results']")
-    private SelenideElement searchResult;
-
-    @FindBy(xpath = "//*[@id='SaveJob']")
-    private SelenideElement saveJobButton;
-
-    @FindBy(xpath = "//a[@id='dropdown-My-job-search']/following-sibling::ul")
-    private SelenideElement myJobSearchDropdown;
-
-    @FindBy(xpath = "//a[@id='dropdown-My-job-search']//parent::li")
-    private SelenideElement getMyJobSearchTab;
-
-    @FindBy(xpath = "//div[contains(@class,'main')]//div[@class='list-body']")
-    private SelenideElement savedJobsPageElementWithSavedJobOffers;
 
 
-
-
-    private List<SelenideElement> visibleJobOffersElements() {
+    public List<SelenideElement> visibleJobOffersElements() {
         return $$(By.xpath(jobOfferCardXPath));
     }
 
     private Integer getPageAmountToDisplayAllOffers() {
-        int totalJobsResult = Integer.parseInt(searchResult.getAttribute(totalJobsResultAttribute));
-        int offersPerPage = Integer.parseInt(searchResult.getAttribute(jobsResultPerPage));
+        int totalJobsResult = Integer.parseInt($x(searchResult).getAttribute(totalJobsResultAttribute));
+        int offersPerPage = Integer.parseInt($x(searchResult).getAttribute(jobsResultPerPage));
 
         if (totalJobsResult % offersPerPage != 0)
             return (totalJobsResult / offersPerPage) + 1;
@@ -61,46 +47,27 @@ public class SearchPage extends PageHelper {
         return this;
     }
 
-    public SearchPage chooseAndSaveOfferByNumber(List<JobOffer> savedJobOffers, int... offerNumbers) {
+    public JobOffer chooseAndSaveOfferByNumber(int offerNumber) {
         List<SelenideElement> allJobOffersElements = visibleJobOffersElements();
-        for (int offerNumber : offerNumbers) {
+
             allJobOffersElements.get(offerNumber - 1).click();
 
             String title = allJobOffersElements.get(offerNumber - 1).$(By.xpath(jobTitleXPath)).text();
             String company = allJobOffersElements.get(offerNumber - 1).$(By.xpath(companyNameXPath)).text();
             String location = allJobOffersElements.get(offerNumber - 1).$(By.xpath(companyLocationXPath)).text();
 
-            JobOffer jobOffer = new JobOffer(title, company, location);
-            savedJobOffers.add(jobOffer);
-            saveJobButton.click();
-            log.info("Saved job title: " + jobOffer.getJobTitle());
-            log.info("Saved job company: " + jobOffer.getCompany());
-            log.info("Saved job location: " + jobOffer.getLocation());
-        }
-        return this;
+            $x(saveJobButton).click();
+            log.info("Saved job title: " + title);
+            log.info("Saved job company: " + company);
+            log.info("Saved job location: " + location);
+
+            return new JobOffer(title, company, location);
     }
 
-    public SearchPage chooseAndSaveLastOffer(List<JobOffer> savedJobOffers) {
-        List<SelenideElement> allJobOffersElements = visibleJobOffersElements();
-        allJobOffersElements.get(allJobOffersElements.size() - 1).click();
-
-        String title = allJobOffersElements.get(allJobOffersElements.size() - 1).$(By.xpath(jobTitleXPath)).text();
-        String company = allJobOffersElements.get(allJobOffersElements.size() - 1).$(By.xpath(companyNameXPath)).text();
-        String location = allJobOffersElements.get(allJobOffersElements.size() - 1).$(By.xpath(companyLocationXPath)).text();
-
-        JobOffer jobOffer = new JobOffer(title, company, location);
-        savedJobOffers.add(jobOffer);
-        log.info("Saved job title: " + jobOffer.getJobTitle());
-        log.info("Saved job company: " + jobOffer.getCompany());
-        log.info("Saved job location: " + jobOffer.getLocation());
-        saveJobButton.click();
-        return this;
-    }
-
-    public SavedJobsPage goToMySavedJobsPage(String page) {
-        getMyJobSearchTab.hover();
-        myJobSearchDropdown.$(By.xpath(".//*[contains(text(),'" + page + "')]")).click();
-        waitForNextPageToLoad(savedJobsPageElementWithSavedJobOffers);
+    public SavedJobsPage chooseOptionFromMyJobSearchDropdown(MyJobSearchOptionEnum searchOption) {
+        $x(getMyJobSearchTab).hover();
+        $x(myJobSearchDropdown).$(By.xpath(".//*[contains(text(),'" + searchOption.getText() + "')]")).click();
+        waitForNextPageToLoad(PageWaitElementEnum.SAVED_JOBS_PAGE_FULL);
         return page(SavedJobsPage.class);
     }
 

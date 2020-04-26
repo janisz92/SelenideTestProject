@@ -1,29 +1,19 @@
 package pages;
 
-import com.codeborne.selenide.SelenideElement;
-import helpers.PageHelper;
-import org.openqa.selenium.support.FindBy;
-import org.testng.Assert;
+import enums.PageWaitElementEnum;
+import helpers.AbstractPage;
 
+import static com.codeborne.selenide.Selenide.$x;
 import static com.codeborne.selenide.Selenide.page;
-import static com.codeborne.selenide.WebDriverRunner.url;
 
-public class DashboardPage extends PageHelper {
+public class DashboardPage extends AbstractPage {
 
-    @FindBy(xpath = "//a[contains(text(),'Philips Jobs')]")
-    private SelenideElement philipsJobsLink;
+    private final String philipsJobsLink = "//a[contains(text(),'Philips Jobs')]";
 
-    @FindBy(xpath = "//div[@class='mux-search-results']")
-    private SelenideElement searchPageElement;
-
-    public DashboardPage verifyUrl(String url) {
-        Assert.assertEquals(url(), url);
-        return this;
-    }
 
     public SearchPage goForPhilipsJobs() {
-        philipsJobsLink.click();
-        waitForNextPageToLoad(searchPageElement);
+        $x(philipsJobsLink).click();
+        waitForNextPageToLoad(PageWaitElementEnum.SEARCH_PAGE);
         return page(SearchPage.class);
     }
 }

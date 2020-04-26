@@ -1,16 +1,17 @@
 package helpers;
 
-import com.codeborne.selenide.SelenideElement;
+import enums.PageWaitElementEnum;
 import org.apache.log4j.Logger;
 import org.openqa.selenium.support.ui.WebDriverWait;
 
 
+import static com.codeborne.selenide.Selenide.$x;
 import static com.codeborne.selenide.WebDriverRunner.getWebDriver;
 
-public class PageHelper {
+public class AbstractPage {
 
     private WebDriverWait wait = new WebDriverWait(getWebDriver(), 5L);
-    protected Logger log = Logger.getLogger(PageHelper.class);
+    protected Logger log = Logger.getLogger(AbstractPage.class);
 
     public void waitABit(int millisecondToWait) {
         try {
@@ -20,7 +21,7 @@ public class PageHelper {
         }
     }
 
-    public void waitForNextPageToLoad(SelenideElement elementFromNextPage) {
-        wait.until(x -> elementFromNextPage.exists());
+    public void waitForNextPageToLoad(PageWaitElementEnum pageToWait) {
+        wait.until(x -> $x(pageToWait.getXPathElement()).exists());
     }
 }

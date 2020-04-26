@@ -1,70 +1,51 @@
 package pages;
 
-import com.codeborne.selenide.SelenideElement;
-import helpers.PageHelper;
-import org.openqa.selenium.support.FindBy;
-import org.testng.Assert;
+import enums.PageWaitElementEnum;
+import helpers.AbstractPage;
 
+import static com.codeborne.selenide.Selenide.$x;
 import static com.codeborne.selenide.Selenide.page;
-import static com.codeborne.selenide.WebDriverRunner.url;
+import static com.codeborne.selenide.Condition.enabled;
 
-public class CreateAccountPage extends PageHelper {
-
-    @FindBy(id = "c_elem_0")
-    private SelenideElement emailInput;
-
-    @FindBy(id = "a_elem_1")
-    private SelenideElement passwordInput;
-
-    @FindBy(id = "a_elem_2")
-    private SelenideElement confirmPasswordInput;
-
-    @FindBy(id = "elem_3")
-    private SelenideElement jobsCorpsCenterSelect;
-
-    @FindBy(xpath = "//span[contains(@class, 'checkbox-custom')]")
-    private SelenideElement termsAndConditionsCheckbox;
-
-    @FindBy(xpath = "//button[contains(text(),'Create an account')]")
-    private SelenideElement confirmCreateAccountButton;
-
-    @FindBy(xpath = "//*[contains(text(),'My Checklist')]")
-    private SelenideElement dashboardPageElement;
+public class CreateAccountPage extends AbstractPage {
 
 
-    public CreateAccountPage verifyUrl(String url) {
-        Assert.assertEquals(url(), url);
-        return this;
-    }
+    private final String emailInput = "//*[@id='c_elem_0']";
+    private final String passwordInput = "//*[@id='a_elem_1']";
+    private final String confirmPasswordInput = "//*[@id='a_elem_2']";
+    private final String jobsCorpsCenterSelect = "//*[@id='elem_3']";
+    private final String termsAndConditionsCheckbox = "//span[contains(@class, 'checkbox-custom')]";
+    private final String confirmCreateAccountButton = "//button[contains(text(),'Create an account')]";
 
     public CreateAccountPage fillCorrectEmailAddressField(String email) {
         log.info("Email: " + email);
-        emailInput.sendKeys(email);
+        $x(emailInput).sendKeys(email);
         return this;
     }
 
     public CreateAccountPage fillCorrectPasswordAndConfirmField(String password) {
         log.info("Password: " + password);
-        passwordInput.clear();
-        passwordInput.sendKeys(password);
-        confirmPasswordInput.clear();
-        confirmPasswordInput.sendKeys(password);
+        $x(passwordInput).clear();
+        $x(passwordInput).sendKeys(password);
+        $x(confirmPasswordInput).clear();
+        $x(confirmPasswordInput).sendKeys(password);
         return this;
     }
 
-    public CreateAccountPage selectJobsCorpsCenter(int index) {
-        jobsCorpsCenterSelect.selectOption(index);
+    public CreateAccountPage selectJobsCorpsCenter(String text) {
+        $x(jobsCorpsCenterSelect).selectOption(text);
         return this;
     }
 
     public CreateAccountPage confirmTermsAndConditions() {
-        termsAndConditionsCheckbox.click();
+        $x(termsAndConditionsCheckbox).click();
         return this;
     }
 
     public DashboardPage confirmCreateAccount() {
-        confirmCreateAccountButton.click();
-        waitForNextPageToLoad(dashboardPageElement);
+        $x(confirmCreateAccountButton).should(enabled);
+        $x(confirmCreateAccountButton).click();
+        waitForNextPageToLoad(PageWaitElementEnum.DASHBOARD_PAGE);
         return page(DashboardPage.class);
     }
 }

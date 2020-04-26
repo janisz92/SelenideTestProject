@@ -5,10 +5,12 @@ import enums.MyJobSearchOptionEnum;
 import enums.UrlEnum;
 import helpers.TestCasesHelper;
 import model.JobOffer;
+import org.testng.Assert;
 import org.testng.annotations.BeforeTest;
 import org.testng.annotations.DataProvider;
 import org.testng.annotations.Test;
 import pages.HomePage;
+import pages.SearchPage;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -18,30 +20,39 @@ import static com.codeborne.selenide.Selenide.*;
 public class TestStory extends TestConfiguration {
 
     HomePage homePage;
+    SearchPage searchPage;
 
     @BeforeTest
     public void openWebPage() {
         homePage = open(UrlEnum.HOME_PAGE.getUrl(), HomePage.class);
     }
 
-    @Test(dataProvider="getEmailAndPassword")
+    @Test(dataProvider = "getEmailAndPassword")
     public void verifyOfSavedSecondAndLastJobTest(String validEmail, String validPassword) {
         List<JobOffer> savedJobOffers = new ArrayList<>();
+        List<JobOffer> visibleSavedJobsInSavedJobsPage = new ArrayList<>();
 
-        homePage.createNewAccount()
-                .verifyUrl(UrlEnum.CREATE_ACCOUNT_PAGE.getUrl())
+        searchPage = homePage
+                .createNewAccount()
                 .fillCorrectEmailAddressField(validEmail)
                 .fillCorrectPasswordAndConfirmField(validPassword)
-                .selectJobsCorpsCenter(1)
+                .selectJobsCorpsCenter("To edit the items in here change messages 389442-389565")
                 .confirmTermsAndConditions()
                 .confirmCreateAccount()
-                .verifyUrl(UrlEnum.DASHBOARD_PAGE.getUrl())
                 .goForPhilipsJobs()
-                .getJobsOffersFromAllPages()
-                .chooseAndSaveOfferByNumber(savedJobOffers, 2)
-                .chooseAndSaveLastOffer(savedJobOffers)
-                .goToMySavedJobsPage(MyJobSearchOptionEnum.SAVED_JOBS.getText())
-                .verifyVisibilityOfSavedJobs(savedJobOffers);
+                .getJobsOffersFromAllPages();
+
+
+        int lastOfferOnPage = searchPage.visibleJobOffersElements().size();
+        savedJobOffers.add(searchPage.chooseAndSaveOfferByNumber(2));
+        savedJobOffers.add(searchPage.chooseAndSaveOfferByNumber(lastOfferOnPage));
+
+        visibleSavedJobsInSavedJobsPage = searchPage
+                .chooseOptionFromMyJobSearchDropdown(MyJobSearchOptionEnum.SAVED_JOBS)
+                .visibleJobOffersElements();
+
+        Assert.assertTrue(JobOffer.compareListOfJobOfferObjects(savedJobOffers,visibleSavedJobsInSavedJobsPage));
+
     }
 
 
